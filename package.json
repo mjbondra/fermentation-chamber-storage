@@ -1,0 +1,15 @@
+{
+  "name": "fermentation-chamber-storage",
+  "description": "Fermentation chamber data storage layer",
+  "version": "0.0.1",
+  "author": {
+    "name": "Michael J. Bondra",
+    "email": "mjbondra@gmail.com",
+    "url": "https://twitter.com/mjbondra"
+  },
+  "dependencies": {
+    "bluebird": "2.1.3",
+    "mongoose": "3.8.12",
+    "uid2": "0.0.3"
+  }
+}
