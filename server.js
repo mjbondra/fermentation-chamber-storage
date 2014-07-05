@@ -1,9 +1,7 @@
 
 var config = require('./config')
-  , host = config.socket.host
   , mongoose = require('mongoose')
   , net = require('net')
-  , port = config.socket.port
   , Promise = require('bluebird')
   , Schema = mongoose.Schema
   , uid = require('uid2');
@@ -65,13 +63,33 @@ var time = {
   }
 };
 
-var connections = [], server = net.createServer(function (socket) {
+var connections = {
+  active: [],
+  remove: function (id) {
+    var i = connections.active.length;
+    while (i--) if (connections.active[i].id === id) {
+      connections.active[i].destroy();
+      connections.active.splice(i, 1);
+    }
+    delete climate.data[id];
+  },
+  removeAll: function () {
+    var i = connections.active.length;
+    while (i--) {
+      if (connections.active[i].id) delete climate.data[connections.active[i].id];
+      connections.active[i].destroy();
+    }
+    connections.active = [];
+  }
+};
+
+var server = net.createServer(function (socket) {
   socket.id = uid(4) + new Date().getTime();
-  connections.push(socket);
+  connections.active.push(socket);
   console.log('socket connection ' + socket.id + ' opened');
   socket.on('close', function () {
+    connections.remove(socket.id);
     console.log('socket connection ' + socket.id + ' closed');
-    delete climate.data[socket.id];
   });
   socket.on('data', function (data) {
     try {
@@ -83,9 +101,9 @@ var connections = [], server = net.createServer(function (socket) {
       console.error(err);
     }
   });
-  socket.setTimeout(5000, function () {
+  socket.setTimeout(config.socket.timeout, function () {
     console.log('socket connection ' + socket.id + ' will be closed due to inactivity');
-    socket.destroy();
+    connections.remove(socket.id);
   });
   climate.data[socket.id] = {
     connection: socket.id
@@ -95,5 +113,6 @@ var connections = [], server = net.createServer(function (socket) {
   climate.save(socket.id, Hour, 3600000, time.nextHour());
   climate.save(socket.id, Day, 86400000, time.nextDay());
 });
-server.listen(port, host);
-console.log('Listening for connections: ', { host: host, port: port });
+server.listen(config.socket.port, config.socket.host, function () {
+  console.log('Listening for connections: ', config.socket);
+});

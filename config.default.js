@@ -2,12 +2,13 @@
 
 module.exports = {
   mongo: {
+    db: 'fermentation_chamber',
     debug: true,
-    host: 'localhost',
-    db: 'fermentation_chamber'
+    host: 'localhost'
   },
   socket: {
-    host: '192.168.2.2',
-    port: 1337
+    host: 'localhost',
+    port: 1337,
+    timeout: 5000
   }
 };

@@ -1,7 +1,7 @@
 {
   "name": "fermentation-chamber-storage",
   "description": "Fermentation chamber data storage layer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Michael J. Bondra",
     "email": "mjbondra@gmail.com",
