@@ -10,7 +10,10 @@ require('./database')(mongoose, config);
 
 var ClimateSchema = {
   connection: String,
-  createdAt: Date,
+  createdAt: {
+    default: new Date(),
+    type: Date
+  },
   humidity: Number,
   temperature: Number
 };
@@ -69,17 +72,19 @@ var connections = {
     var i = connections.active.length;
     while (i--) if (connections.active[i].id === id) {
       connections.active[i].destroy();
-      connections.active.splice(i, 1);
+      delete climate.data[id];
+      return connections.active.splice(i, 1);
     }
-    delete climate.data[id];
+    return false;
   },
   removeAll: function () {
     var i = connections.active.length;
     while (i--) {
       if (connections.active[i].id) delete climate.data[connections.active[i].id];
       connections.active[i].destroy();
+      connections.active.splice(i, 1);
     }
-    connections.active = [];
+    return connections.active;
   }
 };
 
