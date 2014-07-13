@@ -10,11 +10,8 @@ require('./database')(mongoose, config);
 
 var ClimateSchema = {
   connection: String,
-  createdAt: {
-    default: new Date(),
-    type: Date
-  },
-  delay: Number,
+  createdAt: Date,
+  delay: Number, // difference between time of reporting and time of measurement
   humidity: Number,
   temperature: Number
 };
@@ -31,6 +28,7 @@ var climate = {
     }, offset);
     if (!climate.data[id]) return;
     var data = new document(climate.data[id]);
+    data.createdAt = new Date();
     Promise.promisify(data.save, data)().catch(function (err) {
       console.error(err);
     });
