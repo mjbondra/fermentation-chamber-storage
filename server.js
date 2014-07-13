@@ -14,6 +14,7 @@ var ClimateSchema = {
     default: new Date(),
     type: Date
   },
+  delay: Number,
   humidity: Number,
   temperature: Number
 };
@@ -99,7 +100,7 @@ var server = net.createServer(function (socket) {
   socket.on('data', function (data) {
     try {
       data = JSON.parse(data);
-      climate.data[socket.id].createdAt = data.createdAt ? new Date(parseInt(data.createdAt)) : new Date();
+      climate.data[socket.id].delay = data.createdAt ? new Date() - new Date(parseInt(data.createdAt)) : -1;
       climate.data[socket.id].humidity = data.humidity;
       climate.data[socket.id].temperature = data.temperature;
     } catch (err) {
